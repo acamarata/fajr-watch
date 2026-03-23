@@ -1,0 +1,97 @@
+# fajr-watch station configuration
+# Copy this file to station.yaml and fill in your values.
+# On the Pi SD card, place station.yaml in /boot/fajr-watch/station.yaml
+
+station:
+  # Unique station identifier (lowercase, hyphens ok)
+  id: "my-station-01"
+
+  # GPS coordinates (decimal degrees)
+  # South latitudes and west longitudes are negative
+  lat: 41.95
+  lng: -80.55
+
+  # Elevation above sea level in metres
+  elevation_m: 175
+
+  # Horizon type at camera location
+  # Options: ocean, lake, flat, hills, mountain
+  horizon: "lake"
+
+  # Light pollution environment
+  # Options: dark (Bortle 1-2), rural (3-4), suburban (5-6), urban (7-9)
+  environment: "suburban"
+
+  # Your name (for data attribution)
+  host: "Your Name"
+
+  # Contact email (not published, used for station health alerts)
+  contact: "you@example.com"
+
+camera:
+  # Camera model connected to the Pi
+  # Options: zwo_asi224, zwo_asi462, zwo_asi662, pi_hq, pi_cam3, pi_cam3_wide
+  type: "zwo_asi224"
+
+  # Lens focal length in mm (for FOV calculation)
+  lens_mm: 1.8
+
+  # Which horizon the camera points at
+  # Options: east (Fajr only), west (Isha only), allsky (both)
+  orientation: "allsky"
+
+  # Azimuth offset in degrees (0 = camera north is true north)
+  # Measured clockwise. If your camera's "up" points 30 degrees east of north,
+  # set this to 30.
+  azimuth_offset: 0
+
+network:
+  # WiFi credentials (WPA2)
+  wifi_ssid: ""
+  wifi_password: ""
+
+  # Optional: additional WiFi networks (tried in order)
+  # wifi_networks:
+  #   - ssid: "BackupNetwork"
+  #     password: "password2"
+
+  # Data upload endpoint
+  upload_url: "https://api.fajr.watch/v1/upload"
+
+  # Upload API key (provided when you register your station)
+  api_key: ""
+
+capture:
+  # Seconds between frames during twilight window
+  interval_s: 10
+
+  # How many degrees before/after the expected twilight to start/stop capturing
+  # Larger margin = more data but more storage. 5 degrees is ~20-30 min extra.
+  twilight_margin_deg: 5
+
+  # Capture RAW images (recommended for scientific quality)
+  # Set to false for JPEG-only (smaller files, less accurate)
+  raw_format: true
+
+  # Maximum exposure time in seconds
+  # ZWO cameras support up to 1000s. Pi cameras typically max at 30-60s.
+  max_exposure_s: 30
+
+  # Target mean brightness for auto-exposure (0-255 for 8-bit)
+  # Lower = darker frames that preserve faint gradients
+  target_brightness: 80
+
+processing:
+  # Run detection on-device (true) or upload raw frames for server processing (false)
+  detect_on_device: true
+
+  # Minimum confidence score to accept a detection (0.0 - 1.0)
+  min_confidence: 0.5
+
+  # Keep raw frames after processing
+  # true = keep all frames (uses more storage, useful for debugging)
+  # false = keep only the 10 frames around each detection event
+  keep_raw_frames: false
+
+  # Maximum days of local data to retain before cleanup
+  retention_days: 30

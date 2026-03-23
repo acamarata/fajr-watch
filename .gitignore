@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+*.log
+
+# OS image build artifacts
+build/
+*.img
+*.img.xz
+*.img.gz
+
+# Captured data (too large for git)
+data/captures/
+data/processed/
+data/upload-queue/
+
+# System
+.DS_Store
+*.swp
+*.swo
+nohup.out
+
+# IDE
+.vscode/
+.idea/
+
+# AI agent working directories
+.claude/
+.codex/
+.cursor/
+.aider/
+.continue/
+.windsurf/
+.gemini/
+.codeium/
+
+# Secrets
+.env
+.env.*
+config/station.yaml
+.vscode/*
+.aider.chat.history.md
