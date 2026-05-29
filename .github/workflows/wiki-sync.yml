@@ -1,0 +1,43 @@
+name: Sync Wiki
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/wiki/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Checkout wiki
+        id: clone_wiki
+        run: |
+          if git clone "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.wiki.git" .wiki-remote 2>&1; then
+            echo "wiki_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "wiki_exists=false" >> "$GITHUB_OUTPUT"
+            echo "Wiki not yet initialized; skipping sync. Initialize via GitHub web UI first."
+          fi
+
+      - name: Sync wiki pages
+        if: steps.clone_wiki.outputs.wiki_exists == 'true'
+        run: |
+          cp .github/wiki/*.md .wiki-remote/
+          cd .wiki-remote
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No wiki changes to commit"
+          else
+            git commit -m "Sync wiki from repo"
+            git push origin HEAD:master
+          fi
+
