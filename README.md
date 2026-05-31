@@ -25,6 +25,27 @@ The output feeds [pray-calc-ml](https://github.com/acamarata/pray-calc-ml), whic
 
 Total: ~$320-465 per station. Full bill of materials and assembly guide in [docs/hardware](https://github.com/acamarata/fajr-watch/wiki/Hardware).
 
+## Hardware Requirements (Phase 1 — BLE Appliance)
+
+Phase 1 is a compact indoor alarm appliance that uses a TSL2591 ambient light sensor to detect
+true Fajr and Isha via the solar depression angle, then triggers a buzzer. It pairs with a
+companion iOS/Android app over BLE for configuration.
+
+| Component | Model | Adafruit Price | AliExpress Price |
+|---|---|---|---|
+| MCU | Raspberry Pi Zero 2 W | $19.05 (Adafruit #5291) | — |
+| Light sensor | TSL2591 HDR Digital Light | $6.95 (Adafruit #1980) | ~$4.50 |
+| RTC | DS3231 Precision RTC STEMMA QT | $13.95 (Adafruit #5188) | ~$2.00 |
+| GPS (optional) | Ultimate GPS PA1616S | $29.95 (Adafruit #746) | ~$8.00 |
+| Power | PowerBoost 1000C + LiPo 2000 mAh | $32.45 (two items) | ~$8 (TP4056 + 18650) |
+| Buzzer | Piezo PS1240 passive | $1.50 (Adafruit #160) | ~$0.50 |
+| Enclosure | Hammond 1593KBK 100×60×25 mm | ~$6.95 (Digi-Key) | ~$3.00 |
+
+Adafruit prototype total (no GPS): ~$97. AliExpress production total (ESP32 + no GPS): ~$28.
+
+Full bill of materials with supplier alternatives, lead time notes, and ordering sequence:
+[`.github/docs/hardware/BOM.md`](.github/docs/hardware/BOM.md)
+
 ## Quick Start
 
 ### 1. Flash the SD card
@@ -158,6 +179,28 @@ fajr-watch/
 Want to host a station? We provide the hardware (camera + Pi + enclosure + solar panel) and you provide a mounting location with a clear eastern or western horizon. Dark sky sites are ideal, but suburban and urban sites are also valuable for measuring the light pollution offset.
 
 See the [Host Guide](https://github.com/acamarata/fajr-watch/wiki/Host-Guide) for requirements and how to sign up.
+
+## Development Phases
+
+fajr-watch is in active development. The work breaks into three phases.
+
+**Phase 1 — Hardware Prototype (current):** Bench prototype using a Raspberry Pi Zero 2W,
+TSL2591 ambient light sensor (I2C, 0.1-88,000 lux range), and DS3231 real-time clock.
+Power from USB-C mains with an 18650 LiPo backup. The device advertises a BLE GATT
+service so a companion app can configure location and read sighting history. Target
+hardware cost under $60. Estimated 2 weeks of build and validation work.
+
+**Phase 2 — Firmware:** Full Python 3.11+ firmware on RPi OS Lite. The main loop polls
+the TSL2591 every 60 seconds, computes the solar depression angle via the nrel-spa
+algorithm, and fires an alarm (GPIO PWM buzzer) when the angle crosses the configured
+threshold — defaulting to -18 degrees for Fajr. Configuration (location, depression
+threshold, alarm duration) is written via BLE from the companion app and persisted
+across reboots. The last 20 sighting events are readable via BLE. Estimated 3 weeks.
+
+**Phase 3 — Companion App:** React Native (Expo SDK) app for iOS and Android. Four
+screens: BLE scan and pair, settings (location and threshold configuration), sighting
+history, and manual test trigger. The app communicates over BLE and requires no
+background permissions — the device runs standalone once configured. Estimated 4 weeks.
 
 ## Related Projects
 
