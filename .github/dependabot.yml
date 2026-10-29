@@ -8,3 +8,4 @@ updates:
     groups:
       all:
         patterns: ["*"]
+        update-types: ["minor", "patch"]
